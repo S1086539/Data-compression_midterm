@@ -139,7 +139,11 @@ int main(int argc, char* argv[]) {
     // 填充位元
     for (i = 0; i < 8; i++)
         push_buf(1);
-
+    // 顯示壓縮率
+    float compression_ratio = (float)compressed_size / file_length * 100;
+    printf("Original file size: %d bytes\n", file_length);
+    printf("Compressed file size: %d bytes\n", compressed_size);
+    printf("Compression ratio: %.2f%%\n", compression_ratio);
     // 關閉檔案並釋放記憶體
     fclose(fin);
     fclose(fout);
