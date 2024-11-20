@@ -3,65 +3,65 @@
 #include"HaffmanTree.h"
 #include <iostream>
 FileCompress::FileCompress() {
-    // ªì©l¤Æ filebyteinfo °}¦C¡A¨C­Ó¤¸¯Àªº ch ³]¸m¬°¹ïÀ³ªº ASCII ­È
+    // åˆå§‹åŒ– filebyteinfo é™£åˆ—ï¼Œæ¯å€‹å…ƒç´ çš„ ch è¨­ç½®ç‚ºå°æ‡‰çš„ ASCII å€¼
     for (int i = 0; i < 256; i++) {
-        filebyteinfo[i].ch = i; // ³]¸m ch ¬°¹ïÀ³ ASCII ¦r¤¸
+        filebyteinfo[i].ch = i; // è¨­ç½® ch ç‚ºå°æ‡‰ ASCII å­—å…ƒ
     }
 }
 bool FileCompress::Compress(const string& filepath) {
-    // 1. Àò¨ú¤å¥ó¤¤¨C­Ó¦r¸`¥X²{ªº¦¸¼Æ
-    FILE* fp = fopen(filepath.c_str(), "rb"); // ¥H¤G¶i¨îÅª¨ú¼Ò¦¡¥´¶}¤å¥ó
-    if (fp == nullptr) { // ¦pªG¤å¥ó¥´¶}¥¢±Ñ
-        perror("fopen"); // ¿é¥X¿ù»~¸ê°T
+    // ç²å–æ–‡ä»¶ä¸­æ¯å€‹å­—ç¯€å‡ºç¾çš„æ¬¡æ•¸
+    FILE* fp = fopen(filepath.c_str(), "rb"); // ä»¥äºŒé€²åˆ¶è®€å–æ¨¡å¼æ‰“é–‹æ–‡ä»¶
+    if (fp == nullptr) { // å¦‚æœæ–‡ä»¶æ‰“é–‹å¤±æ•—
+        perror("fopen"); // è¼¸å‡ºéŒ¯èª¤è³‡è¨Š
         return false;
     }
 
-    // ´`ÀôÅª¨ú¤å¥ó¤º®e¡A­pºâ¨C­Ó¦r¤¸ªºÀW²v
-    unsigned char readbuff[1024]; // ½w½Ä°Ï
+    // å¾ªç’°è®€å–æ–‡ä»¶å…§å®¹ï¼Œè¨ˆç®—æ¯å€‹å­—å…ƒçš„é »ç‡
+    unsigned char readbuff[1024]; // ç·©è¡å€
     while (1) {
-        size_t read_size = fread(readbuff, 1, 1024, fp); // ¨C¦¸Åª¨ú 1024 ¦r¸`
-        if (read_size == 0) { // ¦pªGÅª¨úµ²§ô
+        size_t read_size = fread(readbuff, 1, 1024, fp); // æ¯æ¬¡è®€å– 1024 å­—ç¯€
+        if (read_size == 0) { // å¦‚æœè®€å–çµæŸ
             break;
         }
-        // §ó·s¨C­Ó¦r¤¸ªº¥X²{¦¸¼Æ
+        // æ›´æ–°æ¯å€‹å­—å…ƒçš„å‡ºç¾æ¬¡æ•¸
         for (size_t i = 0; i < read_size; ++i) {
             filebyteinfo[readbuff[i]].count++;
         }
     }
 
-    // 2. ®Ú¾Ú¦r¤¸ÀW²vºc«Ø«¢¤Ò°Ò¾ğ
-    HuffmanTree<ByteInfo> ht; // ³Ğ«Ø«¢¤Ò°Ò¾ğ
-    ByteInfo invalid; // ©w¸qµL®Ä¸`ÂI¡]¥Î©ó¼ĞÃÑªÅ¸`ÂI¡^
-    ht.CreateHuffmanTree(filebyteinfo, 256, invalid); // ÌÛ«Ø«¢¤Ò°Ò?
+    // æ ¹æ“šå­—å…ƒé »ç‡æ§‹å»ºå“ˆå¤«æ›¼æ¨¹
+    HuffmanTree<ByteInfo> ht;
+    ByteInfo invalid; // å®šç¾©ç„¡æ•ˆç¯€é»ï¼ˆç”¨æ–¼æ¨™è­˜ç©ºç¯€é»ï¼‰
+    ht.CreateHuffmanTree(filebyteinfo, 256, invalid);
 
-    // 3. ¥Í¦¨«¢¤Ò°Ò½s½X
+    // ç”Ÿæˆå“ˆå¤«æ›¼ç·¨ç¢¼
     CreateHuffmanCode(ht.GetRoot());
 
-    // 4. «O¦sÀ£ÁY¸ê°T¨ì¤å¥ó
+    // ä¿å­˜å£“ç¸®è³‡è¨Šåˆ°æ–‡ä»¶
     string filename_Compress;
-    cout << "¿é¤JÀ£ÁY«áªº¤å¥ó¦WºÙ" << endl;
-    cin >> filename_Compress; // ±q¥Î¤á¿é¤JÀ£ÁY«áªº¤å¥ó¦W
-    FILE* fl = fopen(filename_Compress.c_str(), "wb"); // ¥H¤G¶i¨î¼g¤J¼Ò¦¡¥´¶}¤å¥ó
-    CompressInfo(fl, filepath); // «O¦sÀ£ÁY¸ê°T
+    cout << "è¼¸å…¥å£“ç¸®å¾Œçš„æ–‡ä»¶åç¨±" << endl;
+    cin >> filename_Compress; 
+    FILE* fl = fopen(filename_Compress.c_str(), "wb"); // ä»¥äºŒé€²åˆ¶å¯«å…¥æ¨¡å¼æ‰“é–‹æ–‡ä»¶
+    CompressInfo(fl, filepath); // ä¿å­˜å£“ç¸®è³‡è¨Š
 
-    // 5. ¨Ï¥Î«¢¤Ò°Ò½s½X­«·s¼g¤JÀ£ÁY¤º®e
-    fseek(fp, 0, SEEK_SET); // ­«¸m¤å¥ó«ü°w¨ì¤å¥óÀY³¡
-    unsigned char ch = 0;   // «O¦s·í«e¦r¤¸
-    int bitcount = 0;       // °O¿ı¦ì¼Æ
+    //ä½¿ç”¨å“ˆå¤«æ›¼ç·¨ç¢¼é‡æ–°å¯«å…¥å£“ç¸®å…§å®¹
+    fseek(fp, 0, SEEK_SET); // é‡ç½®æ–‡ä»¶æŒ‡é‡åˆ°æ–‡ä»¶é ­éƒ¨
+    unsigned char ch = 0;   // ä¿å­˜ç•¶å‰å­—å…ƒ
+    int bitcount = 0;       // è¨˜éŒ„ä½æ•¸
     while (1) {
         size_t read_size = fread(readbuff, 1, 1024, fp);
         if (read_size == 0) {
             break;
         }
         for (size_t i = 0; i < read_size; ++i) {
-            string& strcode = filebyteinfo[readbuff[i]].strcode; // Àò¨ú«¢¤Ò°Ò½s½X
+            string& strcode = filebyteinfo[readbuff[i]].strcode; // ç²å–å“ˆå¤«æ›¼ç·¨ç¢¼
             for (size_t j = 0; j < strcode.size(); j++) {
-                ch <<= 1; // ¥ª²¾¤@¦ì
+                ch <<= 1; // å·¦ç§»ä¸€ä½
                 if (strcode[j] == '1') {
-                    ch |= 1; // ±N·í«e¦ì³]¬° 1
+                    ch |= 1; // å°‡ç•¶å‰ä½è¨­ç‚º 1
                 }
                 bitcount++;
-                if (bitcount == 8) { // ·í²Ö¿n 8 ¦ì®É¡A¼g¤J¤å¥ó
+                if (bitcount == 8) { // ç•¶ç´¯ç© 8 ä½æ™‚ï¼Œå¯«å…¥æ–‡ä»¶
                     fputc(ch, fl);
                     bitcount = 0;
                 }
@@ -69,67 +69,66 @@ bool FileCompress::Compress(const string& filepath) {
         }
     }
 
-    // ¦pªGÁÙ¦³³Ñ¾l¥¼º¡ 8 ¦ìªº¼Æ¾Ú
+    // å¦‚æœé‚„æœ‰å‰©é¤˜æœªæ»¿ 8 ä½çš„æ•¸æ“š
     if (bitcount > 0 && bitcount < 8) {
-        ch <<= (8 - bitcount); // ¥ª²¾¸É»ô¦ì¼Æ
-        fputc(ch, fl); // ¼g¤J¤å¥ó
+        ch <<= (8 - bitcount); // å·¦ç§»è£œé½Šä½æ•¸
+        fputc(ch, fl); // å¯«å…¥æ–‡ä»¶
     }
 
-    // Åã¥ÜÀ£ÁYµ²ªG
-    int fpSize = ftell(fl); // À£ÁY«á¤å¥ó¤j¤p
-    int outSize = ftell(fp); // À£ÁY«e¤å¥ó¤j¤p
+    // é¡¯ç¤ºå£“ç¸®çµæœ
+    int fpSize = ftell(fl); // å£“ç¸®å¾Œæ–‡ä»¶å¤§å°
+    int outSize = ftell(fp); // å£“ç¸®å‰æ–‡ä»¶å¤§å°
     cout << "\n***********************************\n" << endl;
-    cout << "À£ÁY«e¡G" << fpSize * 1024 << "¦r¸`" << endl;
-    cout << "À£ÁY«á¡G" << outSize * 1024 << "¦r¸`" << endl;
+    cout << "å£“ç¸®å‰ï¼š" << fpSize * 1024 << "å­—ç¯€" << endl;
+    cout << "å£“ç¸®å¾Œï¼š" << outSize * 1024 << "å­—ç¯€" << endl;
     cout << "***********************************" << endl;
 
     fclose(fp); 
     fclose(fl); 
-    cout << "À£ÁY¦¨¥\" << endl;
+    cout << "å£“ç¸®æˆåŠŸ" << endl;
     return true;
 }
 bool FileCompress::UnCompress(const string& filepath) {
-    // 1. Àò¨úÀ£ÁY¤å¥ó¤¤ªºÀ£ÁY¸ê°T
-    FILE* FIn = fopen(filepath.c_str(), "rb"); // ¥H¤G¶i¨îÅª¨ú¼Ò¦¡¥´¶}À£ÁY¤å¥ó
-    if (FIn == nullptr) { // ¦pªG¥´¶}¥¢±Ñ
-        perror("fopen"); // ¥´¦L¿ù»~¸ê°T
+    FILE* FIn = fopen(filepath.c_str(), "rb"); // ä»¥äºŒé€²åˆ¶è®€å–æ¨¡å¼æ‰“é–‹å£“ç¸®æ–‡ä»¶
+    if (FIn == nullptr) { // å¦‚æœæ‰“é–‹å¤±æ•—
+        perror("fopen"); // æ‰“å°éŒ¯èª¤è³‡è¨Š
         return false;
     }
 
-    // Åª¨ú«áºó¡BÁ`¦æ¼Æ©MÀW¦¸¸ê°T
+    // è®€å–å¾Œç¶´ã€ç¸½è¡Œæ•¸å’Œé »æ¬¡è³‡è¨Š
     string PostFix;
     GetLine(FIn, PostFix);
     string strContent;
     GetLine(FIn, strContent);
-    size_t linecount = atoi(strContent.c_str()); // Á`¦æ¼Æ
+    size_t linecount = atoi(strContent.c_str()); // ç¸½è¡Œæ•¸
     for (size_t i = 0; i < linecount; ++i) {
-        GetLine(FIn, strContent); // ¨C¦¸Åª¨ú¤@¦æ¸ê°T
-        if (strContent == "") { // ¦pªG¥X²{´«¦æ
+        GetLine(FIn, strContent); // æ¯æ¬¡è®€å–ä¸€è¡Œè³‡è¨Š
+        if (strContent == "") { // å¦‚æœå‡ºç¾æ›è¡Œ
             strContent += "\n";
             GetLine(FIn, strContent);
         }
-        filebyteinfo[(unsigned char)strContent[0]].count = atoi(strContent.c_str() + 2); // Àò¨úÀW¦¸¸ê°T
+        filebyteinfo[(unsigned char)strContent[0]].count = atoi(strContent.c_str() + 2); // ç²å–é »æ¬¡è³‡è¨Š
     }
 
-    // 2. «ì´_«¢¤Ò°Ò¾ğ
+    //æ¢å¾©å“ˆå¤«æ›¼æ¨¹
     HuffmanTree<ByteInfo> ht;
     ByteInfo invalid;
     ht.CreateHuffmanTree(filebyteinfo, 256, invalid);
 
-    // 3. ¸ÑÀ£ÁY¤å¥ó
+    //è§£å£“ç¸®æ–‡ä»¶
     string filename_UnCompress;
-    cout << "¿é¤J¸ÑÀ£«áªº¤å¥ó¦WºÙ" << endl;
+    cout << "è¼¸å…¥è§£å£“å¾Œçš„æ–‡ä»¶åç¨±" << endl;
     cin >> filename_UnCompress;
-    FILE* fout = fopen(filename_UnCompress.c_str(), "wb"); // ¥´¶}¸ÑÀ£ÁY¤å¥ó
-    unsigned char readbuff[1024]; // ½w½Ä°Ï
+    FILE* fout = fopen(filename_UnCompress.c_str(), "wb"); // æ‰“é–‹è§£å£“ç¸®æ–‡ä»¶
+    unsigned char readbuff[1024]; // ç·©è¡å€
     unsigned char bitcount = 0;
-    HuffmanTreeNode<ByteInfo>* cur = ht.GetRoot(); // «ü¦V«¢¤Ò°Ò¾ğ®Ú¸`ÂI
-    const int FileSize = cur->weight.count; // ®Ú¸`ÂIÅv­Èªí¥Ü¤å¥ó¤j¤p
+    HuffmanTreeNode<ByteInfo>* cur = ht.GetRoot(); // æŒ‡å‘å“ˆå¤«æ›¼æ¨¹æ ¹ç¯€é»
+    const int FileSize = cur->weight.count; // æ ¹ç¯€é»æ¬Šå€¼è¡¨ç¤ºæ–‡ä»¶å¤§å°
     int CompressSize = 0;
 
-    // ¹M¾úÀ£ÁY¤å¥ó¡A³v¦ì¸Ñ½X
+    // éæ­·å£“ç¸®æ–‡ä»¶ï¼Œé€ä½è§£ç¢¼
     while (1) {
-        size_t read_size = fread(readbuff, 1, 1024, FIn); // Åª¨úÀ£ÁY¤å¥ó
+        size_t read_size = fread(readbuff, 1, 1024, FIn); // è®€å–å£“ç¸®æ–‡ä»¶
         if (read_size == 0) {
             break;
         }
@@ -137,36 +136,36 @@ bool FileCompress::UnCompress(const string& filepath) {
             unsigned char ch = readbuff[i];
             bitcount = 0;
             while (bitcount < 8) {
-                if (ch & 0x80) { // ÀË¬d·í«e¦ì¬O§_¬° 1
+                if (ch & 0x80) { // æª¢æŸ¥ç•¶å‰ä½æ˜¯å¦ç‚º 1
                     cur = cur->right;
                 } else {
                     cur = cur->left;
                 }
-                if (cur->left == nullptr && cur->right == nullptr) { // ¦pªG¨ì¹F¸­¤l¸`ÂI
-                    fputc(cur->weight.ch, fout); // ¿é¥X¹ïÀ³¦r¤¸
-                    cur = ht.GetRoot(); // ¦^¨ì®Ú¸`ÂI
+                if (cur->left == nullptr && cur->right == nullptr) { // å¦‚æœåˆ°é”è‘‰å­ç¯€é»
+                    fputc(cur->weight.ch, fout); // è¼¸å‡ºå°æ‡‰å­—å…ƒ
+                    cur = ht.GetRoot(); // å›åˆ°æ ¹ç¯€é»
                     CompressSize++;
-                    if (CompressSize == FileSize) { // ¸ÑÀ£ÁY§¹¦¨
+                    if (CompressSize == FileSize) { 
                         break;
                     }
                 }
                 bitcount++;
-                ch <<= 1; // ¥ª²¾ÀË¬d¤U¤@¦ì
+                ch <<= 1; // å·¦ç§»æª¢æŸ¥ä¸‹ä¸€ä½
             }
         }
     }
 
-    // Åã¥Ü¸ÑÀ£ÁYµ²ªG
+    // é¡¯ç¤ºè§£å£“ç¸®çµæœ
     int fpSize = ftell(fout);
     int outSize = ftell(FIn);
     cout << "\n***********************************\n" << endl;
-    cout << "¸ÑÀ£ÁY«e¡G" << fpSize * 1024 << "¦r¸`" << endl;
-    cout << "¸ÑÀ£ÁY«á¡G" << outSize * 1024 << "¦r¸`" << endl;
+    cout << "è§£å£“ç¸®å‰ï¼š" << fpSize * 1024 << "å­—ç¯€" << endl;
+    cout << "è§£å£“ç¸®å¾Œï¼š" << outSize * 1024 << "å­—ç¯€" << endl;
     cout << "***********************************" << endl;
 
-    fclose(FIn); // Ãö³¬À£ÁY¤å¥ó
-    fclose(fout); // Ãö³¬¸ÑÀ£¤å¥ó
-    cout << "¸ÑÀ£ÁY¦¨¥\" << endl;
+    fclose(FIn);
+    fclose(fout);
+    cout << "è§£å£“ç¸®æˆåŠŸ" << endl;
     return true;
 }
 
