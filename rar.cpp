@@ -124,21 +124,17 @@ int main(int argc, char* argv[]) {
     // 寫入檔案長度
     for (i = 31; i >= 0; i--)
         push_buf((file_length >> i) & 1);
-
     // 壓縮數據
-    int percent = 0;
     for (i = 0; i < file_length; i++) {
         for (j = 0; mapcode[buf[i]][j]; j++)
             push_buf(mapcode[buf[i]][j] - '0');
-        if (i * 100 / file_length > percent) {
-            percent += 10;
-            printf("%d%% ...\n", percent);
-        }
-    }
-
+	}
     // 填充位元
     for (i = 0; i < 8; i++)
         push_buf(1);
+    // 計算壓縮率
+    fseek(fout, 0, SEEK_END);
+    int compressed_size = ftell(fout); // 壓縮後檔案的大小
     // 顯示壓縮率
     float compression_ratio = (float)compressed_size / file_length * 100;
     printf("Original file size: %d bytes\n", file_length);
