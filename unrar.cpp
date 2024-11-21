@@ -81,7 +81,6 @@ int main(int argc, char* argv[]) {
     for (i = 31, n = 0; i >= 0; i--)
         n |= (1 & pop_buf()) << i;
 
-    int percent = 100, on = n;       // 解壓進度相關變數
     while (n--) {                    // 解壓每個字符
         idx = 1;                     // 從哈夫曼樹根節點開始
         while (1) {
@@ -92,10 +91,6 @@ int main(int argc, char* argv[]) {
             i = pop_buf();           // 獲取下一個位元，決定移動到左或右子節點
             if (i) idx = ND[idx].r;  // 移動到右子節點
             else idx = ND[idx].l;    // 移動到左子節點
-        }
-        if (n * 100 / on < percent) { // 更新進度條
-            percent -= 10;
-            printf("%d%% ...\n", 100 - percent);
         }
     }
 
